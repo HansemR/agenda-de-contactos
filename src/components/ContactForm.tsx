@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Contact } from '../types/Contact.tsx'
 
 interface ContactFormProps {
@@ -10,18 +10,47 @@ interface ContactFormProps {
 
 function ContactForm({ onSubmit, editingContact, onUpdate, onCancelEdit }: ContactFormProps) {
   const [name, setName] = useState('')
-  const [phone, setPhone] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')  
+  
+  useEffect(() => {
+    if (editingContact) {
+      setName(editingContact.name)
+      setLastName(editingContact.lastName)
+      setEmail(editingContact.email)
+      setPhone(editingContact.phone)
+    } else {
+      setName('')
+      setLastName('')
+      setEmail('')
+      setPhone('')
+    }
+  }, [editingContact])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!name.trim() || !phone.trim()) {
+    if (!name.trim() || !lastName.trim() || !email.trim() || !phone.trim()) {
       alert('Por favor complete todos los campos')
       return
     }
+    const cleanedContact = {
+      name: name.trim(),
+      lastName: lastName.trim(),
+      email: email.trim(),
+      phone: phone.trim()
+    }
 
-    onSubmit({ name: name.trim(), phone: phone.trim() })
+    if (editingContact) {
+      onUpdate({ ...editingContact, ...cleanedContact })
+    } else {
+      onSubmit(cleanedContact)
+    }
+
     setName('')
+    setLastName('')
+    setEmail('')
     setPhone('')
   }
 
@@ -35,6 +64,26 @@ function ContactForm({ onSubmit, editingContact, onUpdate, onCancelEdit }: Conta
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Ingrese el nombre"
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="lastName">Apellido:</label>
+        <input
+          type="text"
+          id="lastName"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          placeholder="Ingrese el apellido"
+        />
+      </div>
+      <div className="form-group">
+        <label htmlFor="email">Correo electrónico:</label>
+        <input
+          type="email"
+          id="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Ingrese el correo"
         />
       </div>
       

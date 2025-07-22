@@ -31,7 +31,12 @@ function App() {
     console.log('Actualizar contacto:', updatedContact)
   }
 
-  const filteredContacts = contacts
+  const filteredContacts = contacts.filter(contact =>
+    [contact.name, contact.id, contact.phone] //filtro por nombre, id y teléfono
+      .some(field =>
+        field.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+  )
 
   return (
     <div className="app">
